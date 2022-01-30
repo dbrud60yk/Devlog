@@ -1,6 +1,6 @@
 
 # JSON
-JavaScript Object Notation
+JavaScript Object Notation  
 숫자, 문자, 참 또는 거짓 등 여러 형태의 데이터를 키(key)와 값(value)으로 구조화된 객체(object)에 담아 처리하는 규격  
 가공된 JSON 데이터는 텍스트 기반이기 때문에 사람이 쉽게 저장된 데이터를 읽고 수정할 수 있고 디버깅도 편리
 
@@ -17,6 +17,8 @@ JSON은 주석을 지원하지 않음
 
 # JSON 구조
 ```json
+//message1.json
+
 {
     "number": 12345,
     "pi": 3.14,
@@ -29,7 +31,7 @@ JSON은 주석을 지원하지 않음
         }
     },
     "num_array": [1, 2, 3, 4, 5],
-    "str_array": ["one", "two", "three", "four", "five", ]
+    "str_array": ["one", "two", "three", "four", "five"]
 }
 ```
 모든 JSON 데이터는 객체 형태를 의미하는 중괄호({})로 시작하거나 배열 형태를 의미하는 대괄호([])로 시작  
@@ -51,7 +53,93 @@ JSON은 주석을 지원하지 않음
 ```
 
 # JSON 읽고 쓰기
+실무 개발 환경에서는 파일보단 HTTP 요청 메시지에 있는 문자열을 JSON으로 읽어 사용하는 경우가 많지만, JSON 파일인 message1.json을 사용하여 JSON 메시지를 다루는 방범을 설명
+```py
+#open_json_file.py
 
+import json
+
+def open_json_file(filename):
+    with open(filename, encoding='utf8') as file:
+        try:
+            return json.load(file)
+        except ValueError as e:
+            print('JSON 데이터 파싱 실패. 사유={0}'.format(e))
+            return None
+
+#message.json 파일은 같은 디렉터리에 있어야 합니다.
+json_data = open_json_file('message1.json')
+if json_data:
+    print(json_data)
+```
+
+터미널 실행 결과 (open_json_file.py 파일 우클릭 - Run Python File in Terminal)
+```
+{'number': 12345, 'pi': 3.14, 'str': '문자열 값', 'null_key': None, 'object': {'str2': '문자열 값2', 'object2': {'number2': 12345}}, 'num_array': [1, 2, 3, 4, 5], 'str_array': ['one', 'two', 'three', 'four', 'five']}
+```
+
+## JSON 키와 값 읽기
+```py
+#json_reader.py
+
+import json
+
+def open_json_file(filename):
+    with open(filename, encoding='utf8') as file:
+        try:
+            return json.load(file)
+        except ValueError as e:
+            print('JSON 데이터 파싱 실패. 사유={0}'.format(e))
+            return None
+
+#message.json 파일은 같은 디렉터리에 있어야 합니다.
+json_data = open_json_file('message1.json')
+if not json_data:
+    # 더 이상 로직을 진행할 수 없으므로 종료합니다.
+    exit(0)
+
+# 정수
+num_value = json_data['number']
+# 실수
+float_value = json_data['pi']
+# 문자열
+str_value = json_data['str']
+# 빈 키 (None)
+empty_value = json_data['null_key']
+
+print('num_value={0}'.format(num_value))
+print('float_value={0}'.format(float_value))
+print('str_value={0}'.format(str_value))
+print('empty_value={0}'.format(empty_value))
+
+# 객체 안 객체 접근
+json_data2 = json_data['object']
+print('json_data[\'object\'][\'str2\']={0}'.format(json_data2['str2']))
+
+# 배열 접근
+json_array = json_data['num_array']
+for n in json_array:
+    print('n={0}'.format(n))
+```
+터미널 실행 결과 (json_reader.py 파일 우클릭 - Run Python File in Terminal)
+```
+num_value=12345
+float_value=3.14
+str_value=문자열 값
+empty_value=None
+json_data['object']['str2']=문자열 값2
+n=1
+n=2
+n=3
+n=4
+n=5
+```
+
+키 값이 null인 경우는 None, null, nil로 표기되는 게 원칙  
+라이브러리에 따라 false, 0,  "" 등 기본값으로 표기할 수도 있음
+
+파이썬, 자바 c#과 같은 고수준 언어(high-level-language)에서 제공한 JSON 라이브러리는 읽어들인 JSON 데이터를 클래스, 맵, 리스트 등의 객체로 변환해주는 기능이 있음 -> 직렬화(serialization)  
+반대로 클래스, 맵, 리스트 데이터를 JSON 문자열로 바꿔주는 기능 -> 역직렬화(deserialization)
 
 # JSON 한계
 
