@@ -44,7 +44,7 @@ JSON은 주석을 지원하지 않음
 키와 값을 여러 개 나열할 때 쉼표(,)로 구분  
 마지막 키와 값에는 쉼표를 사용하지 않음
 
-## 문자 이스케이프
+### 문자 이스케이프
 ```json
 {
     "str": "큰 따옴표는 \"이렇게\" 표현합니다.",
@@ -52,7 +52,7 @@ JSON은 주석을 지원하지 않음
 }
 ```
 
-# JSON 읽고 쓰기
+# JSON 메시지 읽고 쓰기
 실무 개발 환경에서는 파일보단 HTTP 요청 메시지에 있는 문자열을 JSON으로 읽어 사용하는 경우가 많지만, JSON 파일인 message1.json을 사용하여 JSON 메시지를 다루는 방범을 설명
 ```py
 #open_json_file.py
@@ -141,9 +141,68 @@ n=5
 파이썬, 자바 c#과 같은 고수준 언어(high-level-language)에서 제공한 JSON 라이브러리는 읽어들인 JSON 데이터를 클래스, 맵, 리스트 등의 객체로 변환해주는 기능이 있음 -> 직렬화(serialization)  
 반대로 클래스, 맵, 리스트 데이터를 JSON 문자열로 바꿔주는 기능 -> 역직렬화(deserialization)
 
-# JSON 한계
+### 키를 읽을 때 주의할 점
+실무 개발 환경에서는 버그, 잘못된 요청, 해커의 변조 등의 이유로 키 자체가 존재하지 않거나, 읽어야 할 키는 존재하지만 예상하지 못한 값이 나오는 경우가 많음  
+존재하지 않는 키에 접근했을 때 예외가 발생
+```py
+# 'unknown_key'를 읽는 잘못된 방법
+unknown_value = json_data['unknown_key']
+print('unknown_value={0}'.format(unknown_value))
+```
+터미널 실행 결과
+```
+Traceback (most recent call last):
+  File "/Users/dbrud60yk/Repositories/Devlog/json_reader.py", line 41, in <module>
+    unknown_value = json_data['unknown_key']
+KeyError: 'unknown_key'
+```
 
+예외 발생 제어하는 방법 1 : try-catch 구문
+```py
+# 'unknown_key'를 읽는 올바른 방법 1
+try:
+    unknown_value = json_data['unknown_key']
+    print('unknown_value={0}'.format(unknown_value))
+except KeyError:
+    print('\'unknown_key\'는 존재하지 않습니다.')
+```
+터미널 실행 결과
+```
+'unknown_key'는 존재하지 않습니다.
+```
+
+예외 발생 제어하는 방법 2 : 사용하는 모든 키가 존재하는지 검사
+```py
+# 'unknown_key'를 읽는 올바른 방법 2
+if 'unknown_value' in json_data:
+    unknown_value = json_data['unknown_key']
+    print('unknown_value={0}'.format(unknown_value))
+else:
+    print('\'unknown_key\'는 존재하지 않습니다.')
+```
+터미널 실행 결과
+```
+'unknown_key'는 존재하지 않습니다.
+```
+
+키를 검사할 때는 키 존재 여부 외에 키에 대응하는 값이 올바른 형태인지도 함께 검사해야 함  
+디버깅 환경에서만 동작하는 assert를 사용하여 검사하는 게 좋음
+```py
+#float_value가 3 이상 3.2 미만인지 검사
+assert(3 <= float_value < 3.2)
+#str_value가 null이 아니고 문자열 길이가 0 이상인지 검사
+assert(str_value and len(str_value) > 0)
+```
+
+## JSON 파일 만들기
+### JSON 메시지를 만들 때 유의할 점
+### JSON 키 이름 형식
+
+# JSON 한계
+## 1. 불필요한 트래픽 오버헤드
+## 2. 메시지 호환성 유지의 어려움
 
 # 마치며...
 
 # 레퍼런스
+학교에서 알려주지 않는 17가지 실무 개발 기술 / 이기곤 지음 / 한빛미디어

@@ -36,3 +36,26 @@ print('json_data[\'object\'][\'str2\']={0}'.format(json_data2['str2']))
 json_array = json_data['num_array']
 for n in json_array:
     print('n={0}'.format(n))
+
+# 'unknown_key'를 읽는 잘못된 방법
+# unknown_value = json_data['unknown_key']
+# print('unknown_value={0}'.format(unknown_value))
+
+# 'unknown_key'를 읽는 올바른 방법 1
+try:
+    unknown_value = json_data['unknown_key']
+    print('unknown_value={0}'.format(unknown_value))
+except KeyError:
+    print('\'unknown_key\'는 존재하지 않습니다.')
+
+# 'unknown_key'를 읽는 올바른 방법 2
+if 'unknown_value' in json_data:
+    unknown_value = json_data['unknown_key']
+    print('unknown_value={0}'.format(unknown_value))
+else:
+    print('\'unknown_key\'는 존재하지 않습니다.')
+
+#float_value가 3 이상 3.2 미만인지 검사
+assert(3 <= float_value < 3.2)
+#str_value가 null이 아니고 문자열 길이가 0 이상인지 검사
+assert(str_value and len(str_value) > 0)
