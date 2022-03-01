@@ -195,8 +195,50 @@ assert(str_value and len(str_value) > 0)
 ```
 
 ## JSON 파일 만들기
+```py
+# json_writer.py
+
+import json
+
+# 유니코드 문자열을 명시하기 위해 u를 붙임
+message2 = {
+    u'number': 12345,
+    u'pi': 3.14,
+    u'str': u'문자열 값',
+    u'null_key': None,
+    u'object': {
+        u'str2': u'문자열 값 2',
+        u'object2': {
+            u'number2': 12345
+        }
+    },
+    u'num_array': [1, 2, 3, 4, 5],
+    u'str_array': [u'one', u'two', u'three', u'four', u'five']
+}
+
+# ensure_ascii=True인 경우에는 아스키 코드가 아닌 모든 문자열을 \uXXXX로 표기함
+with open('message2.json', 'w', encoding='UTF8') as file:
+    json.dump(message2, file, ensure_ascii=False)
+    # 들여쓰기 추가
+    # json.dump(message2, file, ensure_ascii=False, indent=2)
+    # 키 정렬 필요한 경우
+    # json.dump(message2, file, ensure_ascii=False, indent=2, sort_keys=True)
+```
+실행하면 message2.json이 생성됨
+
 ### JSON 메시지를 만들 때 유의할 점
+null을 사용하지 않는 게 좋음  
+어떤 키가 null을 가리키고 있다면, 그 키가 어떤 형태의 데이터를 담고 있는지 알 수 없기 떄문  
+빈 값을 보낼 때 다음과 같은 형태로 메시지를 쓰는 게 좋음  
+숫자(정수 또는 실수) -> "키": 0  
+문자열 -> "키": ""  
+객체 -> "키": {}  
+배열 -> "키": []
+
 ### JSON 키 이름 형식
+표준이나 관례가 없음  
+프로그래밍 언어나 소프트웨어 프레잌워크, API마다 이름 짓는 방법이 조금씩 다름  
+실무에서 하나의 규칙을 정하고 통일해 사용하는 게 유지 보수 측면에서 좋음
 
 # JSON 한계
 ## 1. 불필요한 트래픽 오버헤드
